@@ -1,0 +1,20 @@
+
+---
+ - hosts: webservers
+   tasks:
+    - name: Upload app file
+      copy:
+       src: ../index.php
+       dest: /var/www/html
+       mode: 0755
+
+    - name: Configure php.ini file
+      lineinfile:
+         path: /etc/php/7.0/apache2/php.ini
+         regexp: ^short_open_tag
+         line: 'short_open_tag=On'
+      notify: restart apache2
+
+   handlers:
+     - name: restart apache2
+       service: name=apache2 state=restarted

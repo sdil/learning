@@ -1,0 +1,12 @@
+---
+ - hosts: loadbalancers
+   tasks:
+    - name: Create template
+      template:
+       src: ../config/lb-config.j2
+       dest: /etc/apache2/conf-enabled/lb.conf
+       notify: restart apache2
+
+   handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
