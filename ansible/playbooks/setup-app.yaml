@@ -1,11 +1,14 @@
 
 ---
  - hosts: webservers
+
+   vars:
+    path_to_app: "/var/www/html"
    tasks:
     - name: Upload app file
       copy:
        src: ../index.php
-       dest: /var/www/html
+       dest: "{{ path_to_app }}"
        mode: 0755
 
     - name: Configure php.ini file
@@ -14,6 +17,19 @@
          regexp: ^short_open_tag
          line: 'short_open_tag=On'
       notify: restart apache2
+
+    - name: Create  simple info page
+      copy:
+       dest: "{{ path_to_app }}/info.php"
+       content: "Info about webserver {{ ansible_hostname }}"
+
+    - name: See directory contents
+      command: ls -la {{ path_to_app }}
+      register: dir_contents
+
+    - name: Debug directory contents
+      debug:
+       msg: "{{ dir_contents }}"
 
    handlers:
      - name: restart apache2
