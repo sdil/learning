@@ -1,0 +1,13 @@
+
+---
+ - hosts: webservers:loadbalancers
+   tasks:
+    - name: check status of apache
+      command: service apache2 status
+      changed_when: false
+      args:
+       warn: no
+       
+    - name: This is not fail
+      command: /bin/false
+      ignore_errors: yes

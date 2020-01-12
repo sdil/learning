@@ -1,0 +1,29 @@
+---
+# tasks file for roles/webservers
+- name: Upload app file
+  copy:
+   src: ../files/index.php
+   dest: "{{ path_to_app }}"
+   mode: 0755
+
+- name: Configure php.ini file
+  lineinfile:
+     path: /etc/php/7.0/apache2/php.ini
+     regexp: ^short_open_tag
+     line: 'short_open_tag=On'
+  notify: restart apache2
+
+- name: Create  simple info page
+  copy:
+   dest: "{{ path_to_app }}/info.php"
+   content: "Info about webserver {{ ansible_hostname }}"
+
+- name: See directory contents
+  command: ls -la {{ path_to_app }}
+  register: dir_contents
+
+- name: Debug directory contents
+  debug:
+   msg: "{{ dir_contents }}"
+
+

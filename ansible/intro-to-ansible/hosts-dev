@@ -1,0 +1,7 @@
+[webservers]
+app1 ansible_host=1.2.4.109
+app2 ansible_host=1.2.4.108
+
+[loadbalancers]
+lb1 ansible_host=1.2.4.113
+
