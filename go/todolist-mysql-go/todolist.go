@@ -10,6 +10,12 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
+type TodoItemModel struct{
+ Id int `gorm:"primary_key"`
+ Description string
+ Completed bool
+}
+
 func Healthz(w http.ResponseWriter, r *http.Request) {
 	log.Info("API Health is OK")
 	w.Header().Set("Content-Type", "application/json")
@@ -28,6 +34,9 @@ func main() {
 		log.Fatal("Failed to connect to MySQL database")
 	}
 	defer db.Close()
+
+	db.Debug().DropTableIfExists(&TodoItemModel{})
+	db.Debug().AutoMigrate(&TodoItemModel{})
 
 	log.Info("Starting Todolist API server")
 	router := mux.NewRouter()
