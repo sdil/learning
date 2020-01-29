@@ -8,12 +8,26 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"encoding/json"
 )
 
+
+var db, _ = gorm.Open("mysql", "root:root@/todolist?charset=utf8&parseTime=True&loc=Local")
+
 type TodoItemModel struct{
- Id int `gorm:"primary_key"`
- Description string
- Completed bool
+	Id int `gorm:"primary_key"`
+	Description string
+	Completed bool
+}
+
+func CreateItem(w http.ResponseWriter, r *http.Request) {
+	description := r.FormValue("description")
+	log.WithFields(log.Fields{"description": description}).Info("Add new TodoItem. Saving to database.")
+	todo := &TodoItemModel{Description: description, Completed: false}
+	db.Create(&todo)
+	result := db.Last(&todo).Value
+	json.NewEncoder(w).Encode(result)
+
 }
 
 func Healthz(w http.ResponseWriter, r *http.Request) {
@@ -28,11 +42,6 @@ func init() {
 }
 
 func main() {
-	log.Info("Connecting to MySQL database")
-	db, err := gorm.Open("mysql", "root:root@/todolist?charset=utf8&parseTime=True&loc=Local")
-	if err != nil {
-		log.Fatal("Failed to connect to MySQL database")
-	}
 	defer db.Close()
 
 	db.Debug().DropTableIfExists(&TodoItemModel{})
@@ -41,5 +50,6 @@ func main() {
 	log.Info("Starting Todolist API server")
 	router := mux.NewRouter()
 	router.HandleFunc("/healthz", Healthz).Methods("GET")
+	router.HandleFunc("/todo", CreateItem).Methods("POST")
 	http.ListenAndServe(":8000", router)
 }
