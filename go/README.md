@@ -7,6 +7,8 @@ Go is a really awesome programming language. My daily work does not involve in w
   - How to connect Go to mongo (using mgo driver)
   - How to write basic Go HTTP server using Gorilla Mux
   - How to add CORS headers in Gorilla Mux
+- URL Shortener
+  - Hexagonal architecture in Golang
 
 # What I wish to learn
 - Go unittest / behavioral testing
