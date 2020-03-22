@@ -8,16 +8,19 @@ Go is a really awesome programming language. My daily work does not involve in w
   - How to write basic Go HTTP server using Gorilla Mux
   - How to add CORS headers in Gorilla Mux
 - URL Shortener
-  - Hexagonal architecture in Golang
+  - Hexagonal / Port and adapter architecture in Golang
+  - Work with bigger codebases and multiple files
+  - Use Echo web server
+  - Use `context.Background()` to do timeout
 
 # What I wish to learn
 - Go unittest / behavioral testing
 - Goroutine for concurrency applicatoin
-- ORM connection with relational DBs (MySQL & PostgreSQL)
+- ORM connection with relational DBs (MySQL & PostgreSQL) DONE
 - Write commandline apps
-- Write a bigger codebase
+- Write a bigger codebase DONE
 - Write a server that serve different protocols:
   - grpc
   - Websocket
   - GraphQL
-- Understand established codes written in Go (eg. BoltDB, Dgraph, InfluxDB, etc.) to understand how people are writing Go in production
+- Understand established OSS codes written in Go (eg. BoltDB, Dgraph, InfluxDB, etc.) to understand how people are writing Go in production
