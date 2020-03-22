@@ -1,20 +1,15 @@
 package api
 
 import (
-	// "io/ioutil"
-	"log"
 	"net/http"
+	"github.com/labstack/echo/v4"
 
-	"github.com/go-chi/chi"
-	// "github.com/pkg/errors"
-
-	js "github.com/sdil/learning/go/url-shortener/serializer/json"
 	"github.com/sdil/learning/go/url-shortener/shortener"
 )
 
 type RedirectHandler interface {
-	Get(http.ResponseWriter, *http.Request)
-	Post(http.ResponseWriter, *http.Request)
+	Get(echo.Context) error
+	Post(echo.Context) error
 }
 
 type handler struct {
@@ -25,29 +20,21 @@ func NewHandler(redirectService shortener.RedirectService) RedirectHandler {
 	return &handler{redirectService: redirectService}
 }
 
-func setupResponse(w http.ResponseWriter, contentType string, body []byte, statusCode int) {
-	w.Header().Set("Content-Type", contentType)
-	w.WriteHeader(statusCode)
-	_, err := w.Write(body)
-	if err != nil {
-		log.Println(err)
-	}
-}
-
-func (h *handler) serializer(contentType string) shortener.RedirectSerializer {
-	return &js.Redirect{}
-}
-
-func (h *handler) Get(w http.ResponseWriter, r *http.Request) {
-	code := chi.URLParam(r, "code")
+func (h *handler) Get(c echo.Context) error {
+	code := c.Param("code")
 	redirect, err := h.redirectService.Find(code)
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+		return err
 	}
-	http.Redirect(w, r, redirect.URL, http.StatusMovedPermanently)
+	return c.JSON(http.StatusOK, redirect.URL)
 }
 
-func (h *handler) Post(w http.ResponseWriter, r *http.Request) {
-	return
+func (h *handler) Post(c echo.Context) error {
+	redirect := &shortener.Redirect{}
+	redirect.URL = c.FormValue("url")
+	err := h.redirectService.Store(redirect)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, redirect.Code)
 }
