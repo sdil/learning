@@ -15,7 +15,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.core.exceptions import SuspiciousOperation, PermissionDenied
+
+
+def error_400(request):
+    raise SuspiciousOperation()
+
+
+def error_403(request):
+    raise PermissionDenied()
+
+
+def error_500(request):
+    raise Exception()
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
+    path("400", error_400),
+    path("403", error_403),
+    path("500", error_500),
 ]
