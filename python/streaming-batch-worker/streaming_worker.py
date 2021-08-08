@@ -1,14 +1,24 @@
 from kafka import KafkaConsumer
 from time import sleep
+import signal
+
+interrupt = False
 
 def process_message(email):
     print(f"sending email to {email}")
-    #sleep(1) # pretend to do work
+    sleep(0.5) # pretend to do work
     print(f"updating user {email} status to Waiting Confirmation")
-    #sleep(1) # pretend to do work
+    sleep(0.5) # pretend to do work
     print("finished processing message")
 
+def graceful_exit(*args, **kwargs):
+    global interrupt
+    interrupt = True
+
 if __name__ == "__main__":
+
+    signal.signal(signal.SIGINT, graceful_exit)
+    signal.signal(signal.SIGTERM, graceful_exit)
 
     print("starting streaming consumer app")
 
@@ -21,8 +31,8 @@ if __name__ == "__main__":
     for message in consumer:
         process_message(message.value)
 
-        if killer.kill_now:
-            print("End of the program. I was killed gracefully :)")
+        if interrupt:
+            print("End of the program. I was killed gracefully")
             consumer.close()
             exit()
 
