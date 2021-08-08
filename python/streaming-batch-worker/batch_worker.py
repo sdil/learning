@@ -3,7 +3,7 @@ from kafka import KafkaConsumer
 import threading
 from queue import Queue, Empty
 
-items = Queue()
+users = Queue()
 
 
 class Consumer(threading.Thread):
@@ -18,26 +18,28 @@ class Consumer(threading.Thread):
             enable_auto_commit=True,
         )
         for message in consumer:
-            self.process_message(message.value)
+            self.insert_to_buffer(message.value)
 
         consumer.close()
 
-    def process_message(self, message):
-        items.put(message)
+    def insert_to_buffer(self, message):
+        users.put(message)
 
 
 def process_messages():
     try:
         while True:
-            i = items.get_nowait()
-            print(f"process user signup {i}")
+            user = users.get_nowait()
+            print(f"sending email to user {user}")
+            sleep(2) # Pretend that we're doing IO work here
+            print(f"updating database for user {user}")
 
     except Empty:
         pass
 
 
 if __name__ == "__main__":
-    print("Starting batching worker")
+    print("Starting batch worker")
 
     consumer = Consumer()
     consumer.daemon = True
