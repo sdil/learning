@@ -3,7 +3,7 @@ from kafka import KafkaConsumer
 import threading
 from queue import Queue, Empty
 
-users = Queue()
+emails = Queue()
 
 
 class Consumer(threading.Thread):
@@ -12,27 +12,28 @@ class Consumer(threading.Thread):
 
     def run(self):
         consumer = KafkaConsumer(
-            "user_signups",
-            bootstrap_servers=["localhost:9092"],
-            auto_offset_reset="earliest",
-            enable_auto_commit=True,
+            "user_signups", bootstrap_servers=["localhost:9092"], group_id="group1"
         )
+
         for message in consumer:
             self.insert_to_buffer(message.value)
 
-        consumer.close()
-
     def insert_to_buffer(self, message):
-        users.put(message)
+        print("received a message, inserting into a queue buffer")
+        emails.put(message)
 
 
 def process_messages():
+    print("processing message in queue buffer")
+
     try:
         while True:
-            user = users.get_nowait()
-            print(f"sending email to user {user}")
-            sleep(2) # Pretend that we're doing IO work here
-            print(f"updating database for user {user}")
+            email = emails.get_nowait()
+            print(f"sending email to user {email}")
+            sleep(0.5)  # pretend to do work
+            print(f"updating user {email} status to Waiting Confirmation")
+            sleep(0.5)  # pretend to do work
+            print("finished processing message")
 
     except Empty:
         pass

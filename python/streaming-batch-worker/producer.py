@@ -9,9 +9,7 @@ if __name__ == "__main__":
 
     try:
         # Create Kafka topic
-        topic = NewTopic(name=topic_name,
-                             num_partitions=1,
-                             replication_factor=1)
+        topic = NewTopic(name=topic_name, num_partitions=1, replication_factor=1)
         admin = KafkaAdminClient(bootstrap_servers="localhost:9092")
         admin.create_topics([topic])
     except Exception:
@@ -22,4 +20,3 @@ if __name__ == "__main__":
         producer.send(topic_name, email.encode())
         sleep(0.1)
         print(f"Published message to message broker. User email: {email}")
-
