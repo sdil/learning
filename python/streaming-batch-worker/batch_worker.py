@@ -2,9 +2,10 @@ from time import sleep
 from kafka import KafkaConsumer
 import threading
 from queue import Queue, Empty
+import signal
 
 emails = Queue()
-
+is_shutting_down = False
 
 class Consumer(threading.Thread):
     def __init__(self):
@@ -17,6 +18,11 @@ class Consumer(threading.Thread):
 
         for message in consumer:
             self.insert_to_buffer(message.value)
+
+            if is_shutting_down:
+                break
+
+        consumer.close()
 
     def insert_to_buffer(self, message):
         print("received a message, inserting into a queue buffer")
@@ -39,7 +45,17 @@ def process_messages():
         pass
 
 
+def exit_gracefully(*args, **kwargs):
+    global is_shutting_down
+    is_shutting_down = True
+    process_messages()
+    exit()
+
+
 if __name__ == "__main__":
+
+    signal.signal(signal.SIGINT, exit_gracefully)
+    signal.signal(signal.SIGTERM, exit_gracefully)
     print("Starting batch worker")
 
     consumer = Consumer()

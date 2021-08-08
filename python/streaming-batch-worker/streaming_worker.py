@@ -2,7 +2,7 @@ from kafka import KafkaConsumer
 from time import sleep
 import signal
 
-interrupt = False
+is_shutting_down = False
 
 
 def process_message(email):
@@ -14,8 +14,8 @@ def process_message(email):
 
 
 def graceful_exit(*args, **kwargs):
-    global interrupt
-    interrupt = True
+    global is_shutting_down
+    is_shutting_down = True
 
 
 if __name__ == "__main__":
@@ -32,7 +32,9 @@ if __name__ == "__main__":
     for message in consumer:
         process_message(message.value)
 
-        if interrupt:
-            print("End of the program. I was killed gracefully")
-            consumer.close()
-            exit()
+        if is_shutting_down:
+            break
+
+    print("End of the program. I was killed gracefully")
+    consumer.close()
+    exit()
