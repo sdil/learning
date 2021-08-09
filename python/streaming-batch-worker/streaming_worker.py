@@ -23,7 +23,7 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, graceful_exit)
     signal.signal(signal.SIGTERM, graceful_exit)
 
-    print("starting streaming consumer app")
+    print("starting streaming consumer worker")
 
     consumer = KafkaConsumer(
         "user_signups", bootstrap_servers=["localhost:9092"], group_id="group1"
